@@ -1,0 +1,6 @@
+{
+  "name": "DIAMOND JEE HANDBOOK Store",
+  "description": "Premium educational publishing e-commerce platform for the DIAMOND JEE HANDBOOK, featuring UPI payments, manual admin verification, secure PDF delivery, and real-time customer support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
