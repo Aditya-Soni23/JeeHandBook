@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DIAMOND JEE HANDBOOK Store — Official Educational Publishing</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="icon" type="image/svg+xml" href="/JeeHandBook/favicon.svg" />
+    <link rel="alternate icon" type="image/png" href="/JeeHandBook/logo.png" />
+    <link rel="apple-touch-icon" href="/JeeHandBook/logo.png" />
     <meta name="description" content="Premium educational publishing e-commerce platform for the DIAMOND JEE HANDBOOK, featuring UPI payments, manual admin verification, secure PDF delivery, and real-time customer support." />
     <meta property="og:title" content="DIAMOND JEE HANDBOOK Store — Official Educational Publishing" />
     <meta property="og:description" content="The definitive 289-page physics, chemistry & mathematics formula & shortcut handbook for JEE Main & Advanced aspirants." />
@@ -15,29 +15,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    
+    <script type="module" crossorigin src="/JeeHandBook/assets/index-3-QfoXlI.js"></script>
+    <link rel="stylesheet" crossorigin href="/JeeHandBook/assets/index-G3mbJIYT.css">
   </head>
   <body class="bg-[#FAFAF8] text-[#171717] antialiased selection:bg-blue-100 selection:text-blue-900 font-sans">
     <div id="root"></div>
-    <!-- Development entry -->
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- Production fallback when served statically by GitHub Pages on master branch -->
-    <script type="module">
-      setTimeout(() => {
-        if (!window.__VITE_DEV_LOADED__) {
-          console.log('[Store] Loading production bundle for GitHub Pages...');
-          const s = document.createElement('script');
-          s.type = 'module';
-          s.crossOrigin = 'anonymous';
-          s.src = '/JeeHandBook/assets/app.js';
-          document.body.appendChild(s);
-
-          const l = document.createElement('link');
-          l.rel = 'stylesheet';
-          l.crossOrigin = 'anonymous';
-          l.href = '/JeeHandBook/assets/app.css';
-          document.head.appendChild(l);
-        }
-      }, 50);
-    </script>
   </body>
 </html>

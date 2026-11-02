@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { firebaseService } from '../services/firebaseService';
@@ -20,7 +20,9 @@ import {
   FileText,
   Lock,
   ExternalLink,
-  Truck
+  Truck,
+  Search,
+  Sparkles
 } from 'lucide-react';
 import { PdfReaderModal } from '../components/PdfReaderModal';
 
@@ -41,8 +43,15 @@ export const CustomerDashboardPage: React.FC = () => {
   const [adminConversations, setAdminConversations] = useState<{ uid: string; customerName: string; customerEmail: string; customerPhone?: string; lastMessage: string; lastMessageTime: string }[]>([]);
   const [selectedCustomerUid, setSelectedCustomerUid] = useState<string | null>(null);
   const [searchCustomerChat, setSearchCustomerChat] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const isSuperAdmin = Boolean(user && user.email.toLowerCase().trim() === 'adityasonihyderabad@gmail.com');
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return 'Just now';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? 'Just now' : d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  };
 
   const loadData = async () => {
     if (!user) return;
@@ -80,6 +89,10 @@ export const CustomerDashboardPage: React.FC = () => {
       setSearchParams({ tab: 'orders' });
     }
   }, [activeTab, isSuperAdmin]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, activeTab, selectedCustomerUid]);
 
   const handleSelectCustomerChat = async (custUid: string) => {
     setSelectedCustomerUid(custUid);
@@ -300,7 +313,7 @@ export const CustomerDashboardPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-gray-900 text-sm">{order.id}</span>
                     <span className="text-gray-400">·</span>
-                    <span className="text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN')}</span>
+                    <span className="text-gray-500">{formatDate(order.createdAt)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
@@ -324,27 +337,27 @@ export const CustomerDashboardPage: React.FC = () => {
                   <div>
                     <span className="text-gray-400 text-[10px] uppercase font-bold block">Product</span>
                     <p className="font-semibold text-gray-900 mt-0.5">
-                      {order.productType === 'digital' ? 'DIAMOND Digital PDF (289 Pages)' : `DIAMOND Printed (${order.bindingName})`}
+                      {order.productType === 'digital' ? 'DIAMOND Digital PDF (289 Pages)' : `DIAMOND Printed (${order.bindingName || 'Softcover'})`}
                     </p>
-                    <p className="text-gray-500">Amount: ₹{order.totalAmount}</p>
+                    <p className="text-gray-600 mt-0.5">Amount: <strong className="font-mono text-blue-700">₹{order.totalAmount || (order.productType === 'digital' ? 30 : 449)}</strong></p>
                   </div>
 
                   <div>
                     <span className="text-gray-400 text-[10px] uppercase font-bold block">Payment UTR (FamPay)</span>
                     <p className="font-mono font-bold text-blue-700 mt-0.5">{order.utrNumber || 'Not submitted'}</p>
-                    <p className="text-[10px] text-gray-400">Sent to 9154995314@fam</p>
+                    <p className="text-[10px] text-gray-400">Paid to 9154995314@fam</p>
                   </div>
 
                   <div>
                     <span className="text-gray-400 text-[10px] uppercase font-bold block">Fulfillment</span>
                     <p className="font-semibold text-gray-900 mt-0.5">
-                      {order.paymentStatus === 'PAID' ? 'Confirmed & Active' : 'Awaiting Admin Verification'}
+                      {order.paymentStatus === 'PAID' ? '✓ Confirmed & Active' : 'Awaiting Admin Verification'}
                     </p>
-                    {order.productType === 'physical' && (
-                      <p className="text-gray-500 text-[11px] mt-0.5">
-                        Dispatch: 10 working days via Speed Post
-                      </p>
-                    )}
+                    <p className="text-gray-500 text-[11px] mt-0.5">
+                      {order.productType === 'digital' 
+                        ? 'Soft Copy: Unlocks in dashboard upon verification' 
+                        : 'Dispatch: 10 working days via Speed Post'}
+                    </p>
                   </div>
                 </div>
 
@@ -489,26 +502,29 @@ export const CustomerDashboardPage: React.FC = () => {
 
           {isSuperAdmin ? (
             /* ADMIN MULTI-CUSTOMER INBOX CONSOLE (FOR ADITYA SONI) */
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs grid grid-cols-1 md:grid-cols-12 min-h-[550px] text-xs">
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs grid grid-cols-1 md:grid-cols-12 min-h-[580px] text-xs">
               {/* Left Customer List */}
               <div className="md:col-span-4 border-r border-gray-200 flex flex-col bg-gray-50/50">
-                <div className="p-3 border-b border-gray-200 bg-white space-y-2">
+                <div className="p-3.5 border-b border-gray-200 bg-white space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-900">Customer Inquiries</span>
-                    <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    <span className="font-bold text-gray-900 text-sm">Customer Inquiries</span>
+                    <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
                       {adminConversations.length} Active
                     </span>
                   </div>
-                  <input
-                    type="text"
-                    value={searchCustomerChat}
-                    onChange={(e) => setSearchCustomerChat(e.target.value)}
-                    placeholder="Search customer name or email..."
-                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
-                  />
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" />
+                    <input
+                      type="text"
+                      value={searchCustomerChat}
+                      onChange={(e) => setSearchCustomerChat(e.target.value)}
+                      placeholder="Search customer name or email..."
+                      className="w-full pl-8 pr-2.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto divide-y divide-gray-100 max-h-[480px]">
+                <div className="flex-1 overflow-y-auto divide-y divide-gray-100 max-h-[500px]">
                   {adminConversations
                     .filter(c => 
                       !searchCustomerChat || 
@@ -517,28 +533,36 @@ export const CustomerDashboardPage: React.FC = () => {
                     )
                     .map(c => {
                       const isSelected = selectedCustomerUid === c.uid;
+                      const initial = (c.customerName || 'C').charAt(0).toUpperCase();
                       return (
                         <button
                           key={c.uid}
                           type="button"
                           onClick={() => handleSelectCustomerChat(c.uid)}
-                          className={`w-full text-left p-3.5 transition-colors cursor-pointer flex flex-col gap-1 ${
-                            isSelected ? 'bg-blue-50/80 border-l-4 border-blue-600' : 'hover:bg-gray-100/60'
+                          className={`w-full text-left p-3.5 transition-colors cursor-pointer flex items-start gap-3 ${
+                            isSelected ? 'bg-blue-50/90 border-l-4 border-blue-600' : 'hover:bg-gray-100/70'
                           }`}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-gray-900 truncate max-w-[160px]">{c.customerName}</span>
-                            <span className="text-[10px] text-gray-400 font-mono">
-                              {new Date(c.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </span>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
+                            isSelected ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {initial}
                           </div>
-                          <span className="text-[11px] text-gray-500 truncate">{c.customerEmail || 'No email'}</span>
-                          <p className="text-[11px] text-gray-600 truncate mt-0.5">{c.lastMessage}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-bold text-gray-900 truncate">{c.customerName}</span>
+                              <span className="text-[10px] text-gray-400 font-mono shrink-0">
+                                {new Date(c.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-gray-500 truncate block">{c.customerEmail || 'No email'}</span>
+                            <p className="text-[11px] text-gray-600 truncate mt-0.5">{c.lastMessage}</p>
+                          </div>
                         </button>
                       );
                     })}
                   {adminConversations.length === 0 && (
-                    <p className="p-6 text-center text-gray-400 text-xs">No customer messages yet.</p>
+                    <p className="p-8 text-center text-gray-400 text-xs">No customer messages yet.</p>
                   )}
                 </div>
               </div>
@@ -550,20 +574,38 @@ export const CustomerDashboardPage: React.FC = () => {
                     {/* Header */}
                     {(() => {
                       const curCust = adminConversations.find(c => c.uid === selectedCustomerUid);
+                      const custOrder = allOrdersAdmin.find(o => o.uid === selectedCustomerUid);
                       return (
-                        <div className="p-3.5 border-b border-gray-100 flex items-center justify-between bg-white">
-                          <div>
-                            <h4 className="font-bold text-gray-900 text-sm">{curCust?.customerName || 'Selected Customer'}</h4>
-                            <p className="text-[11px] text-gray-500">{curCust?.customerEmail} {curCust?.customerPhone ? `• ${curCust.customerPhone}` : ''}</p>
+                        <div className="p-3.5 border-b border-gray-200 flex items-center justify-between bg-white shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-900 font-bold flex items-center justify-center text-sm">
+                              {(curCust?.customerName || 'C').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-bold text-gray-900 text-sm">{curCust?.customerName || 'Selected Customer'}</h4>
+                                {custOrder && (
+                                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    custOrder.paymentStatus === 'PAID' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'
+                                  }`}>
+                                    {custOrder.productType === 'digital' ? 'Digital ₹30' : 'Printed'} • {custOrder.paymentStatus}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-gray-500">
+                                {curCust?.customerEmail} {curCust?.customerPhone ? `• ${curCust.customerPhone}` : ''}
+                              </p>
+                            </div>
                           </div>
+
                           {curCust?.customerPhone && (
                             <a
                               href={`https://wa.me/${curCust.customerPhone.replace(/\D/g, '').startsWith('91') ? curCust.customerPhone.replace(/\D/g, '') : '91' + curCust.customerPhone.replace(/\D/g, '')}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-[11px] font-bold flex items-center gap-1"
+                              className="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
                             >
-                              <MessageSquare className="w-3 h-3" />
+                              <MessageSquare className="w-3.5 h-3.5" />
                               <span>WhatsApp</span>
                             </a>
                           )}
@@ -571,81 +613,205 @@ export const CustomerDashboardPage: React.FC = () => {
                       );
                     })()}
 
-                    {/* Messages */}
-                    <div className="flex-1 overflow-y-auto space-y-3 p-4 bg-[#FAFAF8] max-h-[400px]">
+                    {/* Quick Response Templates for Aditya */}
+                    <div className="px-3 py-2 bg-gray-50 border-b border-gray-100 flex items-center gap-1.5 overflow-x-auto">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase shrink-0">Quick Reply:</span>
+                      <button
+                        type="button"
+                        onClick={() => setNewChatText("Hi! Your payment has been verified. The digital handbook is now unlocked in your dashboard!")}
+                        className="px-2 py-0.5 bg-white hover:bg-gray-100 border border-gray-200 rounded-md text-[10.5px] text-gray-700 shrink-0 cursor-pointer"
+                      >
+                        ✓ Verified & Unlocked
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewChatText("Please share your 12-digit FamPay UTR number so I can verify and unlock your handbook.")}
+                        className="px-2 py-0.5 bg-white hover:bg-gray-100 border border-gray-200 rounded-md text-[10.5px] text-gray-700 shrink-0 cursor-pointer"
+                      >
+                        💳 Ask UTR
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNewChatText("Your printed handbook has been dispatched via Speed Post. Expected delivery within 10 working days.")}
+                        className="px-2 py-0.5 bg-white hover:bg-gray-100 border border-gray-200 rounded-md text-[10.5px] text-gray-700 shrink-0 cursor-pointer"
+                      >
+                        📦 Dispatched Speed Post
+                      </button>
+                    </div>
+
+                    {/* Messages Container */}
+                    <div className="flex-1 overflow-y-auto space-y-3 p-4 bg-[#F8FAFC] max-h-[380px]">
                       {chatMessages.map(m => {
                         const fromAdmin = m.senderRole === 'admin';
                         return (
                           <div key={m.id} className={`flex flex-col ${fromAdmin ? 'items-end' : 'items-start'}`}>
-                            <div className={`max-w-[80%] p-3 rounded-2xl shadow-xs ${
-                              fromAdmin ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-900'
+                            <div className={`max-w-[75%] p-3.5 rounded-2xl shadow-xs ${
+                              fromAdmin 
+                                ? 'bg-blue-600 text-white rounded-tr-xs' 
+                                : 'bg-white border border-gray-200 text-gray-900 rounded-tl-xs'
                             }`}>
-                              <p className="text-[10px] font-bold opacity-75 mb-0.5">{fromAdmin ? 'You (Aditya Soni)' : m.senderName}</p>
-                              <p className="text-xs leading-relaxed">{m.text}</p>
-                              <span className="text-[9px] opacity-60 block text-right mt-1 font-mono">
-                                {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </span>
+                              <div className="flex items-center justify-between gap-3 mb-1">
+                                <span className={`text-[10px] font-bold ${fromAdmin ? 'text-blue-200' : 'text-blue-700'}`}>
+                                  {fromAdmin ? 'You (Aditya Soni)' : m.senderName}
+                                </span>
+                                <span className={`text-[9px] font-mono ${fromAdmin ? 'text-blue-200' : 'text-gray-400'}`}>
+                                  {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <p className="text-xs leading-relaxed whitespace-pre-wrap">{m.text}</p>
                             </div>
                           </div>
                         );
                       })}
                       {chatMessages.length === 0 && (
-                        <p className="text-center text-gray-400 py-8">No messages in this conversation yet. Send a greeting below!</p>
+                        <p className="text-center text-gray-400 py-12">No messages in this conversation yet. Send a greeting below!</p>
                       )}
+                      <div ref={messagesEndRef} />
                     </div>
 
                     {/* Reply Form */}
-                    <form onSubmit={handleSendChat} className="p-3 border-t border-gray-100 flex gap-2 bg-white">
+                    <form onSubmit={handleSendChat} className="p-3 border-t border-gray-200 flex gap-2 bg-white">
                       <input
                         type="text"
                         value={newChatText}
                         onChange={(e) => setNewChatText(e.target.value)}
                         placeholder="Type reply to customer..."
-                        className="flex-1 p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl text-xs focus:ring-1 focus:ring-blue-500"
+                        className="flex-1 p-3 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-1 focus:ring-blue-500 focus:bg-white"
                       />
-                      <button type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold cursor-pointer transition-colors shadow-xs">
-                        Reply
+                      <button
+                        type="submit"
+                        disabled={!newChatText.trim()}
+                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-bold cursor-pointer transition-colors shadow-xs flex items-center gap-1.5"
+                      >
+                        <span>Reply</span>
+                        <Send className="w-3.5 h-3.5" />
                       </button>
                     </form>
                   </>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center text-gray-400 p-8">
-                    Select a customer from the left list to view and reply to their messages.
+                  <div className="flex-1 flex flex-col items-center justify-center text-gray-400 p-8 space-y-2">
+                    <MessageSquare className="w-8 h-8 text-gray-300" />
+                    <p>Select a customer from the left list to view and reply to their messages.</p>
                   </div>
                 )}
               </div>
             </div>
           ) : (
             /* STUDENT 1-ON-1 CHAT WITH ADITYA SONI */
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col h-[500px] text-xs">
-              <div className="border-b border-gray-100 pb-3 flex items-center justify-between">
-                <span className="font-bold text-gray-900">Direct Chat with Aditya Soni</span>
-                <span className="text-[11px] text-emerald-600 font-semibold">Online</span>
-              </div>
-
-              <div className="flex-1 overflow-y-auto space-y-3 p-3">
-                {chatMessages.map(m => (
-                  <div key={m.id} className={`flex flex-col ${m.senderRole === 'admin' ? 'items-start' : 'items-end'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-2xl ${
-                      m.senderRole === 'admin' ? 'bg-gray-100 text-gray-900' : 'bg-blue-600 text-white'
-                    }`}>
-                      <p className="text-[10px] font-bold opacity-75 mb-0.5">{m.senderRole === 'admin' ? 'Aditya Soni (Admin)' : 'You'}</p>
-                      <p>{m.text}</p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col h-[580px] text-xs overflow-hidden">
+              {/* Modern WhatsApp / Intercom Style Header */}
+              <div className="p-4 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-200 text-blue-950 font-black flex items-center justify-center text-sm ring-2 ring-white/30 shadow-sm">
+                      AS
                     </div>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-blue-900 rounded-full animate-pulse" />
                   </div>
-                ))}
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-bold text-sm tracking-tight text-white">Aditya Soni</h3>
+                      <span className="bg-blue-500/30 text-blue-200 text-[9.5px] font-bold px-1.5 py-0.5 rounded-full border border-blue-400/30">
+                        Author & Publisher
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-blue-200/80 flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                      <span>Online • Replies within 5-15 mins</span>
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href="https://wa.me/919154995314?text=Hi%20Aditya%2C%20I%20have%20a%20query%20about%20the%20Diamond%20JEE%20Handbook"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-sm transition-all text-[11px] cursor-pointer"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Chat on WhatsApp</span>
+                  <span className="sm:hidden">WhatsApp</span>
+                </a>
               </div>
 
-              <form onSubmit={handleSendChat} className="pt-3 border-t border-gray-100 flex gap-2">
+              {/* Chat Thread */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F8FAFC]">
+                {/* Greeting Banner */}
+                <div className="max-w-md mx-auto p-3.5 bg-white rounded-2xl border border-blue-100 shadow-xs text-center space-y-2 mb-2">
+                  <p className="text-xs font-bold text-gray-900">
+                    👋 Welcome to Official JEE Handbook Support!
+                  </p>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">
+                    Message Aditya Soni directly for payment verification, soft copy unlocks, courier tracking, or book syllabus questions.
+                  </p>
+
+                  {/* Suggested Quick Prompt Chips */}
+                  <div className="flex flex-wrap justify-center gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setNewChatText("When will my digital soft copy be unlocked?")}
+                      className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[10.5px] font-semibold border border-blue-200/60 cursor-pointer transition-colors"
+                    >
+                      ⚡ Soft copy unlock time?
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewChatText("I have submitted my FamPay UTR number.")}
+                      className="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-[10.5px] font-semibold border border-emerald-200/60 cursor-pointer transition-colors"
+                    >
+                      💳 Payment UTR submitted
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewChatText("Could you please provide the dispatch tracking for my printed handbook?")}
+                      className="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-[10.5px] font-semibold border border-purple-200/60 cursor-pointer transition-colors"
+                    >
+                      📦 Track printed handbook
+                    </button>
+                  </div>
+                </div>
+
+                {chatMessages.map(m => {
+                  const fromAdmin = m.senderRole === 'admin';
+                  return (
+                    <div key={m.id} className={`flex flex-col ${fromAdmin ? 'items-start' : 'items-end'}`}>
+                      <div className={`max-w-[85%] sm:max-w-[70%] p-3.5 rounded-2xl shadow-xs ${
+                        fromAdmin 
+                          ? 'bg-white border border-gray-200/80 text-gray-900 rounded-tl-xs' 
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-xs'
+                      }`}>
+                        <div className="flex items-center justify-between gap-3 mb-1">
+                          <span className={`text-[10px] font-bold ${fromAdmin ? 'text-blue-700' : 'text-blue-100'}`}>
+                            {fromAdmin ? 'Aditya Soni (Publisher)' : 'You'}
+                          </span>
+                          <span className={`text-[9px] font-mono ${fromAdmin ? 'text-gray-400' : 'text-blue-200'}`}>
+                            {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="text-xs leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Message Input Box */}
+              <form onSubmit={handleSendChat} className="p-3 bg-white border-t border-gray-200 flex items-center gap-2">
                 <input
                   type="text"
                   value={newChatText}
                   onChange={(e) => setNewChatText(e.target.value)}
-                  placeholder="Message Aditya Soni..."
-                  className="flex-1 p-2 bg-[#FAFAF8] border border-gray-300 rounded-xl"
+                  placeholder="Type a message to Aditya Soni (Press Enter)..."
+                  className="flex-1 p-3 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:bg-white outline-hidden transition-all"
                 />
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold cursor-pointer">
-                  Send
+                <button
+                  type="submit"
+                  disabled={!newChatText.trim()}
+                  className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white rounded-xl font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors shrink-0"
+                >
+                  <span>Send</span>
+                  <Send className="w-3.5 h-3.5" />
                 </button>
               </form>
             </div>
@@ -699,7 +865,7 @@ export const CustomerDashboardPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-gray-900 text-sm">{o.id}</span>
                         <span className="text-gray-300">·</span>
-                        <span className="text-gray-500">{new Date(o.createdAt).toLocaleString('en-IN')}</span>
+                        <span className="text-gray-500">{formatDate(o.createdAt)}</span>
                       </div>
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                         isPaid ? 'bg-emerald-50 text-emerald-800 border-emerald-200' :
@@ -715,13 +881,18 @@ export const CustomerDashboardPage: React.FC = () => {
                       {/* Customer Details */}
                       <div>
                         <span className="text-gray-400 text-[10px] uppercase font-bold block">Customer</span>
-                        <p className="font-bold text-gray-900 text-sm mt-0.5">{o.customerName}</p>
-                        <p className="text-gray-600">{o.customerEmail}</p>
-                        <p className="font-mono text-gray-700">{o.customerPhone || 'No phone'}</p>
-                        {o.shippingAddress && (
+                        <p className="font-bold text-gray-900 text-sm mt-0.5">{o.customerName || 'Customer'}</p>
+                        <p className="text-gray-600">{o.customerEmail || 'No email'}</p>
+                        <p className="font-mono text-gray-700 font-bold">{o.customerPhone || 'No phone'}</p>
+                        {o.shippingAddress ? (
                           <div className="mt-2 p-2 bg-white rounded-lg border border-gray-200 text-[11px] text-gray-600">
                             <strong>Shipping Address:</strong><br />
                             {o.shippingAddress.houseNumber}, {o.shippingAddress.street}, {o.shippingAddress.city} - {o.shippingAddress.pinCode}
+                          </div>
+                        ) : (
+                          <div className="mt-2 p-2 bg-blue-50/70 rounded-lg border border-blue-200 text-[11px] text-blue-900">
+                            <strong>Digital Fulfillment:</strong><br />
+                            Soft copy unlocks directly in student dashboard.
                           </div>
                         )}
                       </div>
@@ -730,13 +901,13 @@ export const CustomerDashboardPage: React.FC = () => {
                       <div>
                         <span className="text-gray-400 text-[10px] uppercase font-bold block">Order Details</span>
                         <p className="font-semibold text-gray-900 mt-0.5">
-                          {o.productType === 'digital' ? 'DIAMOND Digital Edition (289 Pages PDF)' : `Printed Book (${o.bindingName})`}
+                          {o.productType === 'digital' ? 'DIAMOND Digital Edition (289 Pages PDF)' : `Printed Book (${o.bindingName || 'Softcover'})`}
                         </p>
                         <p className="text-gray-600 mt-1">
-                          Amount: <strong className="text-blue-700 font-mono text-sm">₹{o.totalAmount}</strong>
+                          Amount: <strong className="text-blue-700 font-mono text-sm">₹{o.totalAmount || (o.productType === 'digital' ? 30 : 449)}</strong>
                         </p>
                         <p className="text-[10px] text-gray-400">
-                          {o.productType === 'digital' ? 'Unlocks Diamond Hand Book.pdf' : 'Delivery: 10 working days'}
+                          {o.productType === 'digital' ? 'Soft Copy: Unlocks upon 1-Click Verification' : 'Delivery: 10 working days via Speed Post'}
                         </p>
                       </div>
 

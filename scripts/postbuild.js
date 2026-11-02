@@ -6,12 +6,26 @@ const distDir = path.join(rootDir, 'dist');
 const docsDir = path.join(rootDir, 'docs');
 const assetsDir = path.join(rootDir, 'assets');
 
-// 1. Ensure 404.html in dist
-const distIndex = path.join(distDir, 'index.html');
-const dist404 = path.join(distDir, '404.html');
-if (fs.existsSync(distIndex)) {
-  fs.copyFileSync(distIndex, dist404);
-}
+// 1. Create a safe, minimal 404.html that cleanly redirects without loop or extra asset requests
+const safe404Html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>DIAMOND JEE HANDBOOK Store</title>
+    <script>
+      var path = window.location.pathname;
+      if (!path.includes('#')) {
+        window.location.replace('/JeeHandBook/');
+      }
+    </script>
+  </head>
+  <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #FAFAF8; color: #333;">
+    <h3>Redirecting to DIAMOND JEE HANDBOOK Store...</h3>
+    <p><a href="/JeeHandBook/">Click here if not redirected automatically</a></p>
+  </body>
+</html>`;
+
+fs.writeFileSync(path.join(distDir, '404.html'), safe404Html, 'utf8');
 
 // 2. Find the main JS and CSS bundles in dist/assets
 const distAssets = path.join(distDir, 'assets');
@@ -47,11 +61,17 @@ if (!fs.existsSync(assetsDir)) {
 }
 fs.cpSync(distAssets, assetsDir, { recursive: true });
 
-// 5. Copy 404.html and .nojekyll to root
-fs.copyFileSync(dist404, path.join(rootDir, '404.html'));
+// 5. Copy compiled production index.html to root for GitHub Pages root deployment
+const distIndex = path.join(distDir, 'index.html');
+if (fs.existsSync(distIndex)) {
+  fs.copyFileSync(distIndex, path.join(rootDir, 'index.html'));
+}
+
+// 6. Copy safe 404.html and .nojekyll to root
+fs.writeFileSync(path.join(rootDir, '404.html'), safe404Html, 'utf8');
 const noJekyll = path.join(distDir, '.nojekyll');
 if (fs.existsSync(noJekyll)) {
   fs.copyFileSync(noJekyll, path.join(rootDir, '.nojekyll'));
 }
 
-console.log('[Postbuild] Prepared dist/, docs/, and root assets for GitHub Pages deployment.');
+console.log('[Postbuild] Safe GitHub Pages build created in dist/, docs/, and root.');

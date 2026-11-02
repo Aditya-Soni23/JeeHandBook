@@ -7,7 +7,24 @@ export default defineConfig(({ mode }) => {
   return {
     // Use /JeeHandBook/ base path for GitHub Pages in production, / for local dev
     base: mode === 'production' ? '/JeeHandBook/' : '/',
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(), 
+      tailwindcss(),
+      {
+        name: 'html-dev-transform',
+        apply: 'serve',
+        transformIndexHtml(html) {
+          // In local development, always ensure /src/main.tsx is loaded with Vite HMR
+          if (!html.includes('/src/main.tsx')) {
+            html = html.replace(
+              /<script type="module" crossorigin src=".*?"><\/script>/,
+              '<script type="module" src="/src/main.tsx"></script>'
+            );
+          }
+          return html;
+        }
+      }
+    ],
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, '.'),

@@ -89,8 +89,18 @@ export const HomePage: React.FC = () => {
       return;
     }
 
-    if (selectedFormat === 'physical' && (!customerName || !customerPhone || !houseAddress || !city || !orderPin)) {
-      alert("Please enter full delivery address.");
+    if (!customerName.trim()) {
+      alert("Please enter your Full Name.");
+      return;
+    }
+
+    if (!customerPhone.trim() || customerPhone.replace(/\D/g, '').length < 10) {
+      alert("Please enter a valid 10-digit mobile number for order verification & WhatsApp updates.");
+      return;
+    }
+
+    if (selectedFormat === 'physical' && (!houseAddress.trim() || !city.trim() || !orderPin.trim())) {
+      alert("Please enter full delivery address (House/Street, City, PIN Code).");
       return;
     }
 
@@ -103,29 +113,31 @@ export const HomePage: React.FC = () => {
       const newOrder: Order = {
         id: newOrderId,
         uid: user.uid,
-        customerName: customerName || user.name,
-        customerEmail: user.email,
-        customerPhone: customerPhone || user.phone || '',
+        customerName: customerName.trim() || user.name || 'Student',
+        customerEmail: user.email || '',
+        customerPhone: customerPhone.trim(),
         productType: selectedFormat,
         bindingType: selectedFormat === 'physical' ? selectedBinding : undefined,
-        bindingName: selectedFormat === 'physical' ? PRODUCT_SPECS.bindings.find(b => b.id === selectedBinding)?.name : undefined,
+        bindingName: selectedFormat === 'physical' 
+          ? (PRODUCT_SPECS.bindings.find(b => b.id === selectedBinding)?.name || 'Softcover') 
+          : 'Digital Edition (PDF)',
         quantity: 1,
-        unitPrice: currentPrice,
-        productPrice: currentPrice,
+        unitPrice: selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice,
+        productPrice: selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice,
         deliveryCharge: selectedFormat === 'digital' ? 0 : (orderPin.startsWith('500') ? 0 : 50),
         discount: 0, // No discounts
         totalAmount: total,
-        pinCode: selectedFormat === 'physical' ? orderPin : undefined,
+        pinCode: selectedFormat === 'physical' ? orderPin.trim() : undefined,
         shippingAddress: selectedFormat === 'physical' ? {
           id: `addr_${Date.now()}`,
-          fullName: customerName,
-          phone: customerPhone,
-          houseNumber: houseAddress,
-          street: city,
+          fullName: customerName.trim(),
+          phone: customerPhone.trim(),
+          houseNumber: houseAddress.trim(),
+          street: city.trim(),
           locality: '',
-          city,
+          city: city.trim(),
           state: 'India',
-          pinCode: orderPin,
+          pinCode: orderPin.trim(),
           isDefault: true
         } : undefined,
         paymentStatus: 'PAYMENT_PENDING',
@@ -135,7 +147,7 @@ export const HomePage: React.FC = () => {
         auditTrail: [{
           timestamp: new Date().toISOString(),
           action: 'ORDER_PLACED',
-          actor: `Customer (${user.name})`
+          actor: `Customer (${customerName.trim() || user.name})`
         }]
       };
 
@@ -937,30 +949,54 @@ export const HomePage: React.FC = () => {
             ) : checkoutStep === 1 ? (
               /* Step 1: Address Details */
               <form onSubmit={handleCreateOrder} className="space-y-4">
-                {selectedFormat === 'physical' && (
-                  <>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-gray-700 mb-1">Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        placeholder="Student / Parent Name"
-                        className="w-full p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl"
-                      />
+                {/* Contact Details — Asked for BOTH Digital & Physical */}
+                <div className="space-y-3 p-3.5 bg-gray-50/80 rounded-xl border border-gray-200">
+                  <div className="flex items-center justify-between pb-1 border-b border-gray-200">
+                    <span className="font-bold text-gray-800 text-[11px] uppercase tracking-wider">
+                      1. Customer Details
+                    </span>
+                    <span className="text-[10px] text-blue-600 font-semibold">
+                      {selectedFormat === 'digital' ? 'For Digital Access & Invoice' : 'For Shipping Updates'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Student / Parent Name"
+                      className="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-700 mb-1">Mobile / WhatsApp Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full p-2.5 bg-white border border-gray-300 rounded-xl font-mono focus:ring-1 focus:ring-blue-500"
+                    />
+                    <p className="text-[10px] text-gray-500 mt-0.5">
+                      Aditya Soni will send payment confirmation & WhatsApp invoice to this number.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Delivery Address — ONLY for Physical Printed Books */}
+                {selectedFormat === 'physical' ? (
+                  <div className="space-y-3 p-3.5 bg-gray-50/80 rounded-xl border border-gray-200">
+                    <div className="pb-1 border-b border-gray-200">
+                      <span className="font-bold text-gray-800 text-[11px] uppercase tracking-wider">
+                        2. Delivery Address
+                      </span>
                     </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-gray-700 mb-1">Phone Number *</label>
-                      <input
-                        type="tel"
-                        required
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        placeholder="+91 98765 43210"
-                        className="w-full p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl"
-                      />
-                    </div>
+
                     <div>
                       <label className="block text-[11px] font-semibold text-gray-700 mb-1">House / Flat / Street *</label>
                       <input
@@ -969,7 +1005,7 @@ export const HomePage: React.FC = () => {
                         value={houseAddress}
                         onChange={(e) => setHouseAddress(e.target.value)}
                         placeholder="Door No, Building, Street"
-                        className="w-full p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl"
+                        className="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus:ring-1 focus:ring-blue-500"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -981,7 +1017,7 @@ export const HomePage: React.FC = () => {
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
                           placeholder="City"
-                          className="w-full p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl"
+                          className="w-full p-2.5 bg-white border border-gray-300 rounded-xl focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                       <div>
@@ -993,11 +1029,21 @@ export const HomePage: React.FC = () => {
                           value={orderPin}
                           onChange={(e) => setOrderPin(e.target.value.replace(/\D/g, ''))}
                           placeholder="PIN Code"
-                          className="w-full p-2.5 bg-[#FAFAF8] border border-gray-300 rounded-xl font-mono"
+                          className="w-full p-2.5 bg-white border border-gray-300 rounded-xl font-mono focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                     </div>
-                  </>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-200 text-blue-900 space-y-1">
+                    <p className="font-bold text-[11px] flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Instant Digital Soft Copy Delivery</span>
+                    </p>
+                    <p className="text-[10.5px] text-blue-800 leading-relaxed">
+                      No physical shipping address needed! After scanning FamPay QR and submitting your 12-digit UTR, the complete 289-page watermarked PDF unlocks directly in your dashboard upon manual verification.
+                    </p>
+                  </div>
                 )}
 
                 <div className="p-3 bg-[#FAFAF8] rounded-xl flex items-center justify-between">
