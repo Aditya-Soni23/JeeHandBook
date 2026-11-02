@@ -18,6 +18,26 @@
   </head>
   <body class="bg-[#FAFAF8] text-[#171717] antialiased selection:bg-blue-100 selection:text-blue-900 font-sans">
     <div id="root"></div>
+    <!-- Development entry -->
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Production fallback when served statically by GitHub Pages on master branch -->
+    <script type="module">
+      setTimeout(() => {
+        if (!window.__VITE_DEV_LOADED__) {
+          console.log('[Store] Loading production bundle for GitHub Pages...');
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.crossOrigin = 'anonymous';
+          s.src = '/JeeHandBook/assets/app.js';
+          document.body.appendChild(s);
+
+          const l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.crossOrigin = 'anonymous';
+          l.href = '/JeeHandBook/assets/app.css';
+          document.head.appendChild(l);
+        }
+      }, 50);
+    </script>
   </body>
 </html>

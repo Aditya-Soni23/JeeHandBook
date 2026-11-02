@@ -1,0 +1,1331 @@
+# BUILD A COMPLETE JEE HANDBOOK E-COMMERCE PLATFORM
+
+Act as a senior full-stack software engineer, Firebase architect, UI/UX designer, security engineer and product designer.
+
+Your task is to design and develop a complete, production-oriented e-commerce platform for selling my JEE preparation handbook, called **DIAMOND JEE HANDBOOK**.
+
+This is a complete full-stack application, NOT just a landing page or frontend prototype.
+
+The application must include:
+
+1. Public e-commerce website.
+2. Google authentication.
+3. Customer dashboard.
+4. Physical book ordering.
+5. Digital PDF purchasing.
+6. Manual UPI payment submission and administrator verification.
+7. Secure PDF access management.
+8. Real-time customer support chat.
+9. Comprehensive administrator control panel.
+10. Invoice and receipt generation.
+11. Delivery and PIN code management.
+12. Product, pricing and inventory management.
+13. Analytics and order management.
+
+The administrator (me) must be able to control practically the entire business through the admin panel without manually editing Firebase records.
+
+---
+
+# 1. BRANDING AND WEBSITE IDENTITY
+
+The product being sold is called:
+
+DIAMOND JEE HANDBOOK
+
+However, the website itself does not currently have a fixed brand name.
+
+IMPORTANT:
+- Do not force the website name to be DIAMOND.
+- Do not use Firebase's project name as the website name.
+- Keep website branding configurable.
+- Use a neutral, premium publishing/e-commerce identity.
+- Display DIAMOND JEE HANDBOOK as the actual product name.
+
+Create a configurable website branding system where I can eventually edit:
+- Website title.
+- Logo.
+- Favicon.
+- Brand name.
+- Footer branding.
+- Contact details.
+- Website description.
+
+Use a clean temporary wordmark until I provide a final website name or logo.
+
+---
+
+# 2. DESIGN AND VISUAL DIRECTION
+
+I want a premium, minimalistic, beautiful LIGHT THEME.
+
+Design references:
+- Apple.com
+- Linear.app
+- Stripe.com
+- Vercel.com
+
+The website should feel like a premium educational publishing platform.
+
+Visual direction:
+
+- Pure white and warm off-white surfaces.
+- Soft grey borders.
+- Elegant typography.
+- Excellent spacing.
+- Minimal navigation.
+- Subtle shadows.
+- Rounded corners.
+- Smooth micro-interactions.
+- Beautiful buttons.
+- Clean cards.
+- Subtle animations.
+- Consistent iconography.
+
+Suggested colours:
+
+Background: #FAFAF8
+Primary surface: #FFFFFF
+Primary text: #171717
+Secondary text: #737373
+Borders: #EAEAEA
+Primary accent: #2563EB
+
+Avoid:
+- Neon colours.
+- Excessive gradients.
+- Dark gaming-style designs.
+- Excessive animations.
+- Flashy transitions.
+- Overcrowded dashboards.
+- Unnecessary decorative elements.
+
+The design must be consistent across:
+- Homepage.
+- Product pages.
+- Authentication.
+- Customer dashboard.
+- Checkout.
+- Admin dashboard.
+- Messaging interface.
+
+Make the application completely responsive and mobile-friendly.
+
+Pay particular attention to mobile navigation, product presentation, checkout and messaging.
+
+---
+
+# 3. TECHNOLOGY STACK
+
+Use the following technology stack:
+
+Frontend:
+- React.
+- TypeScript.
+- Vite.
+- Tailwind CSS.
+- Framer Motion.
+- Lucide React.
+
+Routing:
+- React Router.
+
+Forms:
+- React Hook Form.
+- Zod validation.
+
+Backend:
+- Firebase Cloud Functions.
+- Firebase Admin SDK.
+
+Database:
+- Firebase Realtime Database.
+
+Authentication:
+- Firebase Authentication.
+- Google Sign-in.
+
+File storage:
+- Firebase Cloud Storage.
+
+Other:
+- Firebase Analytics.
+- Server-side PDF generation.
+- Firebase Hosting.
+
+Keep the code modular, reusable, scalable and maintainable.
+
+Do not put the entire application into a single React component.
+
+Separate the frontend, backend, database services, authentication, business logic, reusable components and administrator modules.
+
+---
+
+# 4. FIREBASE CONFIGURATION
+
+IMPORTANT: Use my EXISTING Firebase project.
+
+Do not create a new Firebase project.
+
+Do not rename the Firebase project.
+
+The Firebase project name is simply an existing internal project identifier and has nothing to do with the website branding.
+
+Use this exact configuration:
+
+```typescript
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCzuu8o7HnHrQ0T3YdJ1b0dBg6l9T5fbfQ",
+  authDomain: "lite-2ec2a.firebaseapp.com",
+  databaseURL: "https://lite-2ec2a-default-rtdb.firebaseio.com",
+  projectId: "lite-2ec2a",
+  storageBucket: "lite-2ec2a.firebasestorage.app",
+  messagingSenderId: "453998451075",
+  appId: "1:453853998451075:web:083caaa461b0970719feb6",
+  measurementId: "G-VCDRPLKBWK"
+};
+```
+
+IMPORTANT: The appId must be checked against the original configuration below. Use the exact original value:
+
+`1:453998451075:web:083caaa461b0970719feb6`
+
+Initialize Firebase properly.
+
+Configure:
+- Firebase Authentication.
+- Firebase Realtime Database.
+- Firebase Storage.
+- Firebase Analytics.
+
+Use modular Firebase SDK imports.
+
+Initialize Analytics only in supported browser environments.
+
+Keep configuration centralized.
+
+Use environment variables for configuration where practical, with a `.env.example` file.
+
+Do not expose Firebase Admin SDK credentials or private service account keys.
+
+The Firebase web API key is a client configuration value, not an Admin SDK secret. Configure appropriate API restrictions, Firebase Security Rules and App Check.
+
+If a required Firebase service is not enabled, document the exact steps I need to perform in the Firebase Console.
+
+Do not silently switch to another Firebase project.
+
+---
+
+# 5. PUBLIC HOMEPAGE
+
+Create a polished landing page.
+
+The homepage must include:
+
+### Navigation
+- Logo/wordmark.
+- Home.
+- Explore Handbook.
+- Free Samples.
+- Pricing.
+- About.
+- Contact.
+- Login.
+- My Account when authenticated.
+
+### Hero section
+
+Feature the DIAMOND JEE HANDBOOK.
+
+Include:
+- Attractive book mockup.
+- Product title.
+- Short description.
+- Important selling points.
+- Explore Handbook button.
+- Buy Now button.
+
+Use premium editorial-style layouts.
+
+Do not use random stock photographs of people.
+
+### Product highlights
+
+Display:
+- 289 pages.
+- A4 format.
+- 75 GSM paper.
+- Double-sided printing.
+- Black and white printing.
+- Thick colour cover.
+- Three binding options.
+
+### Book contents
+
+Create a section explaining what the handbook contains.
+
+Allow me to edit the descriptions and chapter information from the admin panel.
+
+### Free sample chapters
+
+Provide two free sample PDFs.
+
+Requirements:
+- Public access.
+- No login required.
+- Preview online.
+- Download PDF.
+- Admin can replace sample PDFs.
+- Admin can change sample descriptions and titles.
+
+### Additional sections
+
+- Why choose this handbook?
+- Product specifications.
+- Pricing calculator.
+- Delivery information.
+- Customer reviews.
+- Frequently asked questions.
+- Contact information.
+- Footer with policy links.
+
+---
+
+# 6. PRODUCT AND PRICING SYSTEM
+
+There are two products.
+
+## A. DIGITAL EDITION
+
+Complete digital handbook PDF.
+
+Price: ₹30.
+
+One-time purchase.
+
+## B. PHYSICAL EDITION
+
+Fixed specifications:
+
+| Specification | Value |
+|---|---|
+| Pages | 289 |
+| Paper | 75 GSM |
+| Size | A4 |
+| Printing | Black and white |
+| Printing | Double-sided |
+| Cover | Thick colour cover |
+
+Customers can select only the binding type.
+
+Binding prices:
+
+| Binding | Price |
+|---|---:|
+| Spiral binding | ₹449 |
+| Soft cover binding | ₹499 |
+| Hard cover binding | ₹649 |
+
+These prices must initially be configured exactly as specified.
+
+However, the administrator must be able to change all prices from the admin dashboard.
+
+Do not hardcode prices throughout the frontend.
+
+All pricing must come from the backend/database and be validated server-side.
+
+---
+
+# 7. HOMEPAGE PRICE CALCULATOR
+
+Create a beautiful interactive pricing calculator.
+
+Customers can select:
+
+- Spiral binding.
+- Soft cover binding.
+- Hard cover binding.
+
+Show the corresponding price instantly.
+
+Include a delivery calculator.
+
+The user can enter a PIN code.
+
+The website should check whether delivery is available and calculate the relevant delivery charge.
+
+The administrator must be able to configure:
+
+- Free delivery PIN codes.
+- Paid delivery PIN codes.
+- Delivery zones.
+- Delivery charges.
+- Unsupported locations.
+- Minimum purchase amounts for free delivery, if required.
+
+Display:
+
+Product price
++ Delivery charge
+- Coupon discount
+= Total payable amount.
+
+Do not assume every location qualifies for free delivery.
+
+Display delivery eligibility clearly before checkout.
+
+---
+
+# 8. AUTHENTICATION
+
+Implement Firebase Google Authentication.
+
+Visitors should be able to browse the entire website without signing in.
+
+Authentication is required for:
+- Placing orders.
+- Accessing customer dashboards.
+- Downloading purchased PDFs.
+- Viewing invoices.
+- Sending private support messages.
+
+After Google login:
+
+- Create the customer profile.
+- Store their Firebase UID.
+- Store their name.
+- Store their email.
+- Store their profile picture.
+- Store registration date.
+- Allow phone number and address details to be completed later.
+
+Redirect users appropriately after authentication.
+
+Do not provide public administrator registration.
+
+Do not allow customers to modify their roles.
+
+---
+
+# 9. CUSTOMER DASHBOARD
+
+Create a premium customer dashboard.
+
+Sidebar:
+
+1. Overview.
+2. My Orders.
+3. My Downloads.
+4. My Addresses.
+5. My Invoices.
+6. Customer Support.
+7. My Profile.
+8. Logout.
+
+### Overview
+
+Display:
+- Welcome message.
+- Total orders.
+- Recent orders.
+- Digital purchases.
+- Pending payments.
+- Recent notifications.
+- Recent support messages.
+
+### My Orders
+
+Display all customer orders.
+
+Each order must show:
+
+- Order ID.
+- Product.
+- Binding type.
+- Quantity.
+- Price.
+- Delivery charge.
+- Order date.
+- Payment status.
+- Order status.
+
+Allow customers to open individual order details.
+
+### My Downloads
+
+Display purchased digital products.
+
+If payment is not approved, show a locked state.
+
+If the administrator has verified payment and granted entitlement, display the Download PDF button.
+
+The complete handbook must never be accessible through an unrestricted public URL.
+
+Enforce access on the backend and through Firebase Storage rules.
+
+Record download activity.
+
+Allow administrators to revoke access.
+
+### My Addresses
+
+Allow customers to:
+- Add an address.
+- Edit an address.
+- Delete an address.
+- Set a default address.
+
+Address fields:
+
+- Full name.
+- Phone number.
+- House number.
+- Street.
+- Locality.
+- City.
+- State.
+- PIN code.
+
+### My Invoices
+
+Display downloadable receipts for completed orders.
+
+### My Profile
+
+Allow editing permitted personal information.
+
+### Customer Support
+
+Provide a link to their private conversation with the administrator.
+
+---
+
+# 10. CHECKOUT AND ORDER CREATION
+
+Create separate checkout experiences for digital and physical products.
+
+## Physical book checkout
+
+Collect:
+
+- Selected binding.
+- Quantity.
+- Customer name.
+- Phone number.
+- Delivery address.
+- PIN code.
+
+Calculate:
+- Product amount.
+- Delivery amount.
+- Coupon discount.
+- Final amount.
+
+Show an order summary before confirmation.
+
+## Digital checkout
+
+Show:
+- Product name.
+- Digital edition price: ₹30.
+- Final amount.
+- Payment instructions.
+
+Authentication is required.
+
+## Order IDs
+
+Generate unique human-readable order IDs.
+
+Example:
+
+DJH-2026-00001
+
+Prevent duplicate orders caused by accidental repeated clicks.
+
+All order creation must use trusted backend logic.
+
+Customers must not be able to manipulate:
+- Product prices.
+- Final amounts.
+- Payment status.
+- Order approval.
+- Entitlements.
+- Administrator-only fields.
+
+---
+
+# 11. MANUAL UPI PAYMENT SYSTEM
+
+THIS IS THE PAYMENT METHOD TO IMPLEMENT FOR THE INITIAL LAUNCH.
+
+Do not integrate Razorpay, Cashfree or another payment gateway in this version.
+
+I will manually verify every payment myself.
+
+Create a complete UPI QR-based checkout system.
+
+### Administrator payment settings
+
+In the admin panel, provide:
+
+- UPI ID.
+- Account/payee display name.
+- QR code image upload.
+- Payment instructions.
+- Payment support contact.
+
+I must be able to change the QR code and UPI details without modifying source code.
+
+### Customer checkout workflow
+
+1. Customer confirms the order.
+2. Website generates a unique order ID.
+3. Website calculates the exact payable amount.
+4. Display the UPI QR code.
+5. Display the configured UPI ID.
+6. Display the exact amount.
+7. Display the order ID.
+8. Customer scans the QR and completes payment.
+9. Customer enters the UPI transaction reference number (UTR).
+10. Customer can optionally upload a payment screenshot.
+11. Customer submits payment details.
+12. Order status becomes PAYMENT_VERIFICATION_PENDING.
+
+Where supported, generate a dynamic UPI payment URI with the correct amount and order reference. Retain the static QR fallback.
+
+### Important
+
+A submitted screenshot or UTR is not automatic proof of payment.
+
+I will manually check my actual bank account and verify the transaction.
+
+Never automatically approve payment based on:
+- Screenshot upload.
+- Customer clicking a button.
+- Entered UTR.
+- Frontend state.
+
+### Admin payment verification
+
+In the admin panel, show:
+
+- Order ID.
+- Customer name.
+- Customer email.
+- Product.
+- Amount.
+- UTR.
+- Payment screenshot.
+- Submission date.
+- Verification status.
+
+Administrator actions:
+
+- Approve payment.
+- Reject payment.
+- Request additional information.
+
+If rejected, allow the customer to resubmit payment details.
+
+If approved:
+- Mark payment as verified.
+- Update the order.
+- Record verification timestamp.
+- Record which administrator approved it.
+- Trigger the appropriate next step.
+
+For digital products, grant PDF entitlement after successful administrator approval.
+
+For physical products, move the order into processing.
+
+Every verification action must be logged.
+
+Make the workflow resistant to duplicate submissions and accidental double approvals.
+
+---
+
+# 12. SECURE DIGITAL PDF DELIVERY
+
+The complete handbook PDF must be uploaded and managed by the administrator.
+
+Store it in Firebase Storage in a protected location.
+
+Implement customer-specific entitlement records.
+
+Workflow:
+
+Order created
+→ Payment submitted
+→ Administrator verifies payment
+→ Administrator approves
+→ Customer entitlement granted
+→ Download enabled.
+
+Security requirements:
+
+- No public full-PDF URL.
+- No frontend-only protection.
+- No customer ability to change entitlement.
+- No customer ability to access another user's files.
+- Backend authorization before downloading.
+- Short-lived download URLs where appropriate.
+- Download activity logging.
+- Administrator access revocation.
+
+Allow administrators to:
+- Upload the complete PDF.
+- Replace the PDF.
+- View current PDF version.
+- Manage customer entitlements.
+- Grant access when appropriate.
+- Revoke access.
+
+Keep the two free sample PDFs publicly available.
+
+---
+
+# 13. REAL-TIME CUSTOMER SUPPORT CHAT
+
+Implement a real-time personal chatroom for every customer.
+
+Each customer must have a separate private conversation with me.
+
+## Customer chat
+
+Features:
+
+- Modern messaging interface.
+- Real-time updates.
+- Text messages.
+- Image attachments.
+- Optional document attachments.
+- Message timestamps.
+- Read receipts.
+- Unread indicators.
+- Conversation history.
+
+Provide predefined topics:
+
+- Book-related question.
+- Payment issue.
+- Order status.
+- Delivery issue.
+- Other.
+
+## Administrator chat dashboard
+
+Create a dedicated Messages section.
+
+Display every customer's conversation in a searchable list.
+
+Show:
+- Customer name.
+- Email.
+- Profile picture.
+- Last message.
+- Last message time.
+- Unread count.
+- Conversation status.
+
+Admin capabilities:
+
+- Open any conversation.
+- Reply instantly.
+- Send text.
+- Attach images.
+- Attach documents.
+- Search customers.
+- Search by order ID.
+- Filter unread messages.
+- Mark resolved.
+- Reopen conversations.
+- View order history alongside the conversation.
+
+Messages must update in real time using Firebase Realtime Database listeners.
+
+Only the respective customer and authorized administrators may access a conversation.
+
+Use proper database and storage rules.
+
+---
+
+# 14. ADMINISTRATOR CONTROL PANEL
+
+This is one of the most important parts of the application.
+
+Create a separate, secure administrator dashboard.
+
+Design it like a professional SaaS management platform.
+
+Sidebar:
+
+1. Overview.
+2. Orders.
+3. Customers.
+4. Products.
+5. Digital Library.
+6. Messages.
+7. Payments.
+8. Delivery Management.
+9. Coupons.
+10. Reviews.
+11. Invoices.
+12. Website Content.
+13. Settings.
+
+## Overview
+
+Display:
+
+- Total revenue.
+- Total orders.
+- Total customers.
+- Digital product sales.
+- Physical book sales.
+- Pending payments.
+- Pending orders.
+- Orders being processed.
+- Dispatched orders.
+- Delivered orders.
+
+Create clean analytics charts.
+
+Provide date filters.
+
+## Order management
+
+Show all orders in a searchable table.
+
+Filters:
+
+- All.
+- Payment pending.
+- Payment verification pending.
+- Paid.
+- Processing.
+- Dispatched.
+- Delivered.
+- Cancelled.
+- Refunded.
+
+Admin actions:
+
+- View order.
+- Approve payment.
+- Reject payment.
+- Update order status.
+- Add tracking number.
+- Add internal notes.
+- Cancel order.
+- Record refunds.
+
+Maintain an audit trail.
+
+## Customer management
+
+Display:
+
+- Customer information.
+- Email.
+- Phone.
+- Registration date.
+- Number of orders.
+- Total purchases.
+- Purchase history.
+- Digital access permissions.
+
+## Product management
+
+Allow changing:
+- Digital price.
+- Spiral price.
+- Soft cover price.
+- Hard cover price.
+- Product descriptions.
+- Availability.
+- Inventory quantity.
+
+## Digital library
+
+Allow:
+- Uploading full PDFs.
+- Uploading free samples.
+- Replacing files.
+- Managing PDF versions.
+- Managing access permissions.
+
+## Website content management
+
+Allow editing:
+- Homepage text.
+- Announcements.
+- FAQ.
+- Product descriptions.
+- Sample chapter titles.
+- Promotional banners.
+- Contact information.
+
+---
+
+# 15. DELIVERY MANAGEMENT
+
+Build an admin-managed delivery system.
+
+I should be able to:
+
+- Add PIN codes.
+- Create delivery zones.
+- Set free delivery zones.
+- Set paid delivery zones.
+- Set individual delivery charges.
+- Disable unsupported PIN codes.
+- Edit delivery charges.
+- Change delivery policies.
+
+At checkout, validate the customer's PIN code.
+
+Display a clear message:
+
+- Free delivery available.
+- Delivery available with additional charges.
+- Delivery currently unavailable.
+
+Allow admin to update:
+- Order processing.
+- Dispatched.
+- Delivered.
+
+Include courier name and tracking number fields.
+
+Initially, delivery can be managed manually.
+
+Do not integrate a courier API unless specifically configured later.
+
+---
+
+# 16. INVOICE AND RECEIPT GENERATION
+
+Implement professional PDF invoice/receipt generation.
+
+Each document should contain:
+
+- Website branding.
+- DIAMOND JEE HANDBOOK product name.
+- Unique invoice/receipt number.
+- Order ID.
+- Customer name.
+- Customer email.
+- Phone number.
+- Billing address.
+- Shipping address where applicable.
+- Product name.
+- Binding type.
+- Quantity.
+- Product price.
+- Delivery charges.
+- Discount.
+- Total amount.
+- Payment method.
+- UTR/reference number.
+- Payment date.
+- Document generation date.
+
+Allow:
+
+- Admin to download receipts.
+- Admin to share receipts.
+- Customers to download their receipts.
+
+Use ordinary order/payment receipts unless appropriate GST registration and tax configuration have been established.
+
+Ensure document numbering is unique and generated securely.
+
+---
+
+# 17. COUPON SYSTEM
+
+Implement an administrator-managed coupon system.
+
+Support:
+
+- Fixed discounts.
+- Percentage discounts.
+- Expiry dates.
+- Maximum redemptions.
+- Product-specific coupons.
+- Minimum order amounts.
+- Active/inactive status.
+
+Validate coupons on the backend.
+
+---
+
+# 18. CUSTOMER REVIEWS
+
+Allow verified customers with completed purchases to submit:
+
+- Star rating.
+- Review title.
+- Written review.
+
+Admin can:
+- Approve.
+- Reject.
+- Hide.
+- Delete inappropriate reviews.
+
+Only approved reviews should be publicly displayed.
+
+Clearly identify verified purchasers.
+
+---
+
+# 19. NOTIFICATIONS
+
+Implement in-app notifications.
+
+Notify customers about:
+
+- Order confirmation.
+- Payment verification pending.
+- Payment approval.
+- Payment rejection.
+- Order processing.
+- Order dispatch.
+- Delivery completion.
+- PDF access granted.
+- New chat messages.
+
+Create an unread notification indicator.
+
+Structure the system so email notifications can be added later.
+
+---
+
+# 20. DATABASE ARCHITECTURE
+
+Use Firebase Realtime Database.
+
+Suggested structure:
+
+diamond/
+  users/
+    {uid}/
+      profile/
+      addresses/
+      entitlements/
+
+  orders/
+    {orderId}/
+
+  payments/
+    {paymentId}/
+
+  conversations/
+    {uid}/
+      messages/
+
+  notifications/
+    {uid}/
+
+  products/
+
+  digitalLibrary/
+
+  deliveryZones/
+
+  coupons/
+
+  reviews/
+
+  invoices/
+
+  settings/
+
+  auditLogs/
+
+Use proper denormalization where required for Realtime Database queries.
+
+Implement indexes for frequently accessed fields.
+
+Maintain separate customer and administrator permissions.
+
+Never rely on hidden frontend components for security.
+
+---
+
+# 21. SECURITY REQUIREMENTS
+
+Security is mandatory.
+
+Implement:
+
+- Firebase Authentication.
+- Firebase Realtime Database Security Rules.
+- Firebase Storage Security Rules.
+- Firebase Admin SDK.
+- Trusted Cloud Functions.
+- Administrator custom claims.
+- Backend order validation.
+- Server-side price calculation.
+- Protected PDF downloads.
+- Secure chat permissions.
+- File upload validation.
+- Audit logging.
+- Firebase App Check where supported.
+
+Customers must never be able to:
+- Set their own admin role.
+- Approve their own payment.
+- Change payment status.
+- Modify their own order total.
+- Unlock PDFs.
+- Access another customer's personal information.
+- Read another customer's messages.
+- Change product prices.
+- Change delivery policies.
+
+Assign administrator privileges using a trusted server-side setup process.
+
+Never create a publicly accessible admin registration page.
+
+Never put service account JSON or private credentials in the frontend.
+
+Write restrictive production-ready security rules.
+
+Do not deploy open database or storage permissions.
+
+---
+
+# 22. LEGAL AND POLICY PAGES
+
+Create the following pages:
+
+- Terms and Conditions.
+- Privacy Policy.
+- Refund and Cancellation Policy.
+- Shipping and Delivery Policy.
+- Digital Product Policy.
+- Contact Information.
+
+Make the content editable from the administrator panel.
+
+Do not invent GST registration information, company registration details or business credentials.
+
+---
+
+# 23. USER EXPERIENCE
+
+Implement:
+
+- Loading states.
+- Skeleton loaders.
+- Empty states.
+- Success messages.
+- Error handling.
+- Confirmation modals.
+- Search.
+- Filtering.
+- Sorting.
+- Pagination.
+- Responsive navigation.
+- Accessible controls.
+- Form validation.
+- Proper mobile layouts.
+
+Do not use browser alerts for ordinary interactions.
+
+Every visible button must perform its intended function.
+
+Do not create fake charts, fake orders or fake payment success messages in production.
+
+If demo data is used during development, clearly separate it from real customer data.
+
+---
+
+# 24. PERFORMANCE
+
+Optimize for:
+
+- Fast page loading.
+- Mobile responsiveness.
+- Efficient Firebase listeners.
+- Lazy loading.
+- Image optimization.
+- Code splitting.
+- Minimal unnecessary dependencies.
+- Efficient database queries.
+
+Avoid excessive reads and writes to Firebase.
+
+Unsubscribe from real-time listeners when components unmount.
+
+---
+
+# 25. TESTING
+
+Test the complete application.
+
+Important test cases:
+
+1. Public visitor opens homepage.
+2. Visitor downloads free sample PDFs.
+3. Customer signs in with Google.
+4. Customer creates a physical order.
+5. Customer creates a digital order.
+6. Customer enters a delivery PIN code.
+7. Delivery charge is calculated correctly.
+8. Customer submits UPI payment information.
+9. Order enters payment verification pending.
+10. Admin views the payment submission.
+11. Admin approves the payment.
+12. Digital PDF access is granted.
+13. Physical order enters processing.
+14. Customer sends a chat message.
+15. Admin receives the message in real time.
+16. Admin replies.
+17. Customer sees the reply.
+18. Customer downloads a receipt.
+19. Admin updates shipping status.
+20. Customer views order tracking.
+21. Unauthorized user attempts to access admin routes.
+22. Customer attempts to modify payment status.
+23. Customer attempts to access another customer's PDF.
+24. Customer attempts to read another customer's conversation.
+
+All unauthorized operations must be denied.
+
+---
+
+# 26. DEPLOYMENT AND DOCUMENTATION
+
+Prepare:
+
+- README.md
+- .env.example
+- Firebase setup instructions.
+- Firebase Authentication instructions.
+- Google sign-in configuration instructions.
+- Realtime Database rules.
+- Storage rules.
+- Cloud Functions deployment instructions.
+- Firebase Hosting instructions.
+- Administrator setup instructions.
+- Initial admin claim assignment procedure.
+- Sample PDF upload instructions.
+- Full PDF upload instructions.
+- UPI QR configuration instructions.
+- Database structure documentation.
+
+If some Firebase services are not enabled, explain how to enable them.
+
+Do not invent service credentials.
+
+Do not assume that the administrator's UPI QR or PDF files already exist.
+
+Provide clear upload and configuration screens.
+
+---
+
+# 27. IMPLEMENTATION STRATEGY
+
+First inspect the existing project directory.
+
+Reuse existing configuration where sensible.
+
+Then implement the complete application in a structured manner:
+
+PHASE 1:
+Project setup, design system, navigation and public homepage.
+
+PHASE 2:
+Product pages, specifications, samples and price calculator.
+
+PHASE 3:
+Firebase initialization and Google authentication.
+
+PHASE 4:
+Customer dashboard, profile and addresses.
+
+PHASE 5:
+Physical and digital ordering system.
+
+PHASE 6:
+Manual UPI QR checkout and payment submission.
+
+PHASE 7:
+Admin payment verification and order management.
+
+PHASE 8:
+Secure PDF storage and digital entitlements.
+
+PHASE 9:
+Real-time customer messaging.
+
+PHASE 10:
+Invoice generation and delivery management.
+
+PHASE 11:
+Admin dashboard, analytics and settings.
+
+PHASE 12:
+Security rules, tests, bug fixing and deployment documentation.
+
+Do not stop after completing the first few phases.
+
+Do not deliver only a frontend prototype.
+
+Do not substitute mock implementations for Firebase functionality.
+
+If credentials or external configuration are missing, implement the integration properly and clearly document the remaining setup steps.
+
+Make independent design decisions without repeatedly asking for minor preferences.
+
+Run the build and fix TypeScript errors, broken routes and runtime errors.
+
+---
+
+# 28. FINAL ACCEPTANCE CRITERIA
+
+The final result must be a fully functional educational publishing e-commerce platform.
+
+A visitor should be able to:
+
+- Discover the handbook.
+- Read product details.
+- Download two free sample chapters.
+- Calculate physical book pricing.
+- Sign in with Google.
+- Purchase a digital or physical edition.
+- Submit manual UPI payment information.
+- View order status.
+- Download an approved PDF.
+- Download receipts.
+- Chat privately with the administrator.
+
+The administrator should be able to:
+
+- Manage all customers.
+- Manage all orders.
+- Verify every payment manually.
+- Approve or reject payments.
+- Unlock or revoke PDF access.
+- Manage physical book orders.
+- Manage delivery zones.
+- Generate invoices.
+- Respond to every customer chat.
+- Upload and replace PDFs.
+- Manage product prices.
+- Manage coupons.
+- Manage reviews.
+- View analytics.
+- Configure website settings.
+
+The website must look polished, modern, minimalistic and premium.
+
+Prioritize security, reliability, functionality and visual quality equally.
+
+**Build the complete application, not merely a demonstration.**

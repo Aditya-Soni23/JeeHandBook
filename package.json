@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build && bun -e \"import fs from 'node:fs'; fs.copyFileSync('dist/index.html', 'dist/404.html');\"",
+    "build": "vite build && bun scripts/postbuild.js",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
+    "clean": "rm -rf dist server.js docs assets",
     "lint": "tsc --noEmit",
     "predeploy": "bun run build",
     "deploy": "gh-pages -d dist -b gh-pages"
