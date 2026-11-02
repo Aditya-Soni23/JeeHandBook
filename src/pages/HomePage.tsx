@@ -61,6 +61,14 @@ export const HomePage: React.FC = () => {
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [copiedUpi, setCopiedUpi] = useState(false);
 
+  // Sync user details when signed in
+  useEffect(() => {
+    if (user) {
+      if (!customerName && user.name) setCustomerName(user.name);
+      if (!customerPhone && user.phone) setCustomerPhone(user.phone);
+    }
+  }, [user]);
+
   // Reviews
   const [reviews, setReviews] = useState<any[]>([]);
 
@@ -99,7 +107,9 @@ export const HomePage: React.FC = () => {
       return;
     }
 
-    if (selectedFormat === 'physical' && (!houseAddress.trim() || !city.trim() || !orderPin.trim())) {
+    const isDigital = selectedFormat === 'digital';
+
+    if (!isDigital && (!houseAddress.trim() || !city.trim() || !orderPin.trim())) {
       alert("Please enter full delivery address (House/Street, City, PIN Code).");
       return;
     }
@@ -108,27 +118,27 @@ export const HomePage: React.FC = () => {
     try {
       const orderNum = Math.floor(10000 + Math.random() * 90000);
       const newOrderId = `DJH-2026-${orderNum}`;
-      const total = selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice + (orderPin.startsWith('500') ? 0 : 50);
+      const total = isDigital ? FIXED_PRICES.digital : currentPrice + (orderPin.startsWith('500') ? 0 : 50);
 
       const newOrder: Order = {
         id: newOrderId,
         uid: user.uid,
-        customerName: customerName.trim() || user.name || 'Student',
+        customerName: customerName.trim(),
         customerEmail: user.email || '',
         customerPhone: customerPhone.trim(),
-        productType: selectedFormat,
-        bindingType: selectedFormat === 'physical' ? selectedBinding : undefined,
-        bindingName: selectedFormat === 'physical' 
-          ? (PRODUCT_SPECS.bindings.find(b => b.id === selectedBinding)?.name || 'Softcover') 
-          : 'Digital Edition (PDF)',
+        productType: isDigital ? 'digital' : 'physical',
+        bindingType: isDigital ? undefined : selectedBinding,
+        bindingName: isDigital 
+          ? 'Digital Edition (PDF)' 
+          : (PRODUCT_SPECS.bindings.find(b => b.id === selectedBinding)?.name || 'Softcover'),
         quantity: 1,
-        unitPrice: selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice,
-        productPrice: selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice,
-        deliveryCharge: selectedFormat === 'digital' ? 0 : (orderPin.startsWith('500') ? 0 : 50),
-        discount: 0, // No discounts
+        unitPrice: isDigital ? FIXED_PRICES.digital : currentPrice,
+        productPrice: isDigital ? FIXED_PRICES.digital : currentPrice,
+        deliveryCharge: isDigital ? 0 : (orderPin.startsWith('500') ? 0 : 50),
+        discount: 0,
         totalAmount: total,
-        pinCode: selectedFormat === 'physical' ? orderPin.trim() : undefined,
-        shippingAddress: selectedFormat === 'physical' ? {
+        pinCode: isDigital ? undefined : orderPin.trim(),
+        shippingAddress: isDigital ? undefined : {
           id: `addr_${Date.now()}`,
           fullName: customerName.trim(),
           phone: customerPhone.trim(),
@@ -139,7 +149,7 @@ export const HomePage: React.FC = () => {
           state: 'India',
           pinCode: orderPin.trim(),
           isDefault: true
-        } : undefined,
+        },
         paymentStatus: 'PAYMENT_PENDING',
         orderStatus: 'PLACED',
         createdAt: new Date().toISOString(),
@@ -567,7 +577,7 @@ export const HomePage: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-1.5">
                   <Check className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span>Unlimited web reader access</span>
+                  <span>Direct PDF download (48.8 MB)</span>
                 </li>
               </ul>
             </div>
@@ -949,6 +959,56 @@ export const HomePage: React.FC = () => {
             ) : checkoutStep === 1 ? (
               /* Step 1: Address Details */
               <form onSubmit={handleCreateOrder} className="space-y-4">
+                {/* Format Switcher inside Modal so user always has 100% control */}
+                <div className="grid grid-cols-2 gap-1.5 p-1 bg-gray-100 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFormat('digital')}
+                    className={`py-2 px-3 rounded-lg font-bold text-center text-xs transition-all cursor-pointer ${
+                      selectedFormat === 'digital' 
+                        ? 'bg-blue-600 text-white shadow-xs' 
+                        : 'text-gray-600 hover:text-gray-900 bg-transparent'
+                    }`}
+                  >
+                    Digital Edition (₹30)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFormat('physical')}
+                    className={`py-2 px-3 rounded-lg font-bold text-center text-xs transition-all cursor-pointer ${
+                      selectedFormat === 'physical' 
+                        ? 'bg-blue-600 text-white shadow-xs' 
+                        : 'text-gray-600 hover:text-gray-900 bg-transparent'
+                    }`}
+                  >
+                    Printed Edition
+                  </button>
+                </div>
+
+                {/* Binding options if physical */}
+                {selectedFormat === 'physical' && (
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-semibold text-gray-700">Choose Binding Style:</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {PRODUCT_SPECS.bindings.map(b => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setSelectedBinding(b.id as BindingType)}
+                          className={`p-2 rounded-xl border text-center text-[11px] cursor-pointer transition-all ${
+                            selectedBinding === b.id 
+                              ? 'border-blue-600 bg-blue-50 text-blue-900 font-bold' 
+                              : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          <div>{b.name}</div>
+                          <div className="font-mono font-bold mt-0.5">₹{b.price}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Contact Details — Asked for BOTH Digital & Physical */}
                 <div className="space-y-3 p-3.5 bg-gray-50/80 rounded-xl border border-gray-200">
                   <div className="flex items-center justify-between pb-1 border-b border-gray-200">
@@ -1046,10 +1106,15 @@ export const HomePage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="p-3 bg-[#FAFAF8] rounded-xl flex items-center justify-between">
-                  <span>Payable Amount:</span>
-                  <span className="font-mono text-base font-bold text-blue-700">
-                    ₹{selectedFormat === 'digital' ? FIXED_PRICES.digital : currentPrice + (orderPin.startsWith('500') ? 0 : 50)}
+                <div className="p-3 bg-[#FAFAF8] rounded-xl flex items-center justify-between border border-gray-200">
+                  <div>
+                    <span className="font-bold text-gray-800 block text-xs">Total Amount to Pay:</span>
+                    <span className="text-[10px] text-gray-500">
+                      {selectedFormat === 'digital' ? 'Fixed ₹30 (No delivery fee)' : `₹${currentPrice} Book + ${orderPin.startsWith('500') ? 'FREE Local' : '₹50'} Shipping`}
+                    </span>
+                  </div>
+                  <span className="font-mono text-xl font-black text-blue-700">
+                    ₹{selectedFormat === 'digital' ? 30 : currentPrice + (orderPin.startsWith('500') ? 0 : 50)}
                   </span>
                 </div>
 

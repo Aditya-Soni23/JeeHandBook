@@ -5,6 +5,7 @@ import {
   update, 
   push, 
   onValue, 
+  remove,
   DatabaseReference 
 } from "firebase/database";
 import { database } from "../config/firebase";
@@ -109,6 +110,19 @@ export const firebaseService = {
     // Physical orders require manual admin approval to prevent the free loophole.
     if (updates.paymentStatus === 'PAID' && merged.productType === 'digital') {
       await this.grantEntitlement(merged.uid, merged.id);
+    }
+  },
+
+  async deleteOrder(orderId: string): Promise<void> {
+    const orders = getLocal<Order[]>('orders', []);
+    const updated = orders.filter(o => o.id !== orderId);
+    setLocal('orders', updated);
+
+    try {
+      const orderRef = ref(database, `diamond/orders/${orderId}`);
+      await remove(orderRef);
+    } catch (e) {
+      console.warn("RTDB deleteOrder notice:", e);
     }
   },
 

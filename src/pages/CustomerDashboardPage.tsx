@@ -22,9 +22,9 @@ import {
   ExternalLink,
   Truck,
   Search,
-  Sparkles
+  Sparkles,
+  Trash2
 } from 'lucide-react';
-import { PdfReaderModal } from '../components/PdfReaderModal';
 
 export const CustomerDashboardPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,7 +37,6 @@ export const CustomerDashboardPage: React.FC = () => {
   const [entitlement, setEntitlement] = useState<DigitalEntitlement>({ granted: false, downloadCount: 0 });
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newChatText, setNewChatText] = useState('');
-  const [readerOrderId, setReaderOrderId] = useState<string | null>(null);
 
   // Admin Multi-Customer Chat States
   const [adminConversations, setAdminConversations] = useState<{ uid: string; customerName: string; customerEmail: string; customerPhone?: string; lastMessage: string; lastMessageTime: string }[]>([]);
@@ -197,6 +196,18 @@ export const CustomerDashboardPage: React.FC = () => {
     }
   };
 
+  const handleDeleteOrder = async (orderId: string) => {
+    if (!window.confirm(`Delete order ${orderId}? This permanently removes it from the database.`)) return;
+    try {
+      await firebaseService.deleteOrder(orderId);
+      setAllOrdersAdmin(prev => prev.filter(o => o.id !== orderId));
+      setOrders(prev => prev.filter(o => o.id !== orderId));
+      alert(`Order ${orderId} deleted.`);
+    } catch (err: any) {
+      alert("Error deleting order: " + err.message);
+    }
+  };
+
   const handleDownloadInvoice = (order: Order) => {
     const doc = generateInvoicePdf(order);
     doc.save(`DIAMOND-Receipt-${order.id}.pdf`);
@@ -337,9 +348,9 @@ export const CustomerDashboardPage: React.FC = () => {
                   <div>
                     <span className="text-gray-400 text-[10px] uppercase font-bold block">Product</span>
                     <p className="font-semibold text-gray-900 mt-0.5">
-                      {order.productType === 'digital' ? 'DIAMOND Digital PDF (289 Pages)' : `DIAMOND Printed (${order.bindingName || 'Softcover'})`}
+                      {(order.productType === 'digital' || !order.shippingAddress) ? 'DIAMOND Digital PDF (289 Pages)' : `DIAMOND Printed (${order.bindingName || 'Softcover'})`}
                     </p>
-                    <p className="text-gray-600 mt-0.5">Amount: <strong className="font-mono text-blue-700">₹{order.totalAmount || (order.productType === 'digital' ? 30 : 449)}</strong></p>
+                    <p className="text-gray-600 mt-0.5">Amount: <strong className="font-mono text-blue-700">₹{(order.productType === 'digital' || !order.shippingAddress) ? (order.totalAmount || 30) : (order.totalAmount || 449)}</strong></p>
                   </div>
 
                   <div>
@@ -354,7 +365,7 @@ export const CustomerDashboardPage: React.FC = () => {
                       {order.paymentStatus === 'PAID' ? '✓ Confirmed & Active' : 'Awaiting Admin Verification'}
                     </p>
                     <p className="text-gray-500 text-[11px] mt-0.5">
-                      {order.productType === 'digital' 
+                      {(order.productType === 'digital' || !order.shippingAddress) 
                         ? 'Soft Copy: Unlocks in dashboard upon verification' 
                         : 'Dispatch: 10 working days via Speed Post'}
                     </p>
@@ -420,21 +431,13 @@ export const CustomerDashboardPage: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
-                  href="/samples/Diamond Hand Book.pdf"
+                  href={`${import.meta.env.BASE_URL}samples/Diamond Hand Book.pdf`}
                   download="Diamond Hand Book.pdf"
-                  className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
+                  className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer text-sm"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-5 h-5" />
                   <span>Download Diamond Hand Book.pdf (48.8 MB)</span>
                 </a>
-
-                <button
-                  onClick={() => setReaderOrderId(orders[0]?.id || 'DJH-ACTIVE')}
-                  className="px-4 py-3 bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 rounded-xl font-bold flex items-center gap-2 transition-colors cursor-pointer shadow-xs"
-                >
-                  <Eye className="w-4 h-4 text-blue-600" />
-                  <span>Open in Online PDF Reader</span>
-                </button>
 
                 {orders[0] && (
                   <button
@@ -901,13 +904,13 @@ export const CustomerDashboardPage: React.FC = () => {
                       <div>
                         <span className="text-gray-400 text-[10px] uppercase font-bold block">Order Details</span>
                         <p className="font-semibold text-gray-900 mt-0.5">
-                          {o.productType === 'digital' ? 'DIAMOND Digital Edition (289 Pages PDF)' : `Printed Book (${o.bindingName || 'Softcover'})`}
+                          {(o.productType === 'digital' || !o.shippingAddress) ? 'DIAMOND Digital Edition (289 Pages PDF)' : `Printed Book (${o.bindingName || 'Softcover'})`}
                         </p>
                         <p className="text-gray-600 mt-1">
-                          Amount: <strong className="text-blue-700 font-mono text-sm">₹{o.totalAmount || (o.productType === 'digital' ? 30 : 449)}</strong>
+                          Amount: <strong className="text-blue-700 font-mono text-sm">₹{(o.productType === 'digital' || !o.shippingAddress) ? (o.totalAmount || 30) : (o.totalAmount || 449)}</strong>
                         </p>
                         <p className="text-[10px] text-gray-400">
-                          {o.productType === 'digital' ? 'Soft Copy: Unlocks upon 1-Click Verification' : 'Delivery: 10 working days via Speed Post'}
+                          {(o.productType === 'digital' || !o.shippingAddress) ? 'Soft Copy: Unlocks upon 1-Click Verification' : 'Delivery: 10 working days via Speed Post'}
                         </p>
                       </div>
 
@@ -964,6 +967,15 @@ export const CustomerDashboardPage: React.FC = () => {
                         )}
 
                         <button
+                          onClick={() => handleDeleteOrder(o.id)}
+                          className="px-2.5 py-1.5 bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-700 border border-gray-200 rounded-lg font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                          title="Permanently Delete Order"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">Delete</span>
+                        </button>
+
+                        <button
                           onClick={() => handleConfirmAndSendDigital(o)}
                           className={`px-4 py-2 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer ${
                             isPaid ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-emerald-600 hover:bg-emerald-700 ring-2 ring-emerald-300'
@@ -980,14 +992,6 @@ export const CustomerDashboardPage: React.FC = () => {
             </div>
           )}
         </div>
-      )}
-
-      {readerOrderId && (
-        <PdfReaderModal
-          orderId={readerOrderId}
-          isOpen={!!readerOrderId}
-          onClose={() => setReaderOrderId(null)}
-        />
       )}
     </div>
   );

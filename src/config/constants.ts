@@ -1,16 +1,24 @@
+import coverShowcaseImg from '../assets/images/jee_handbook_cover_showcase_1793626040990.jpg';
+import bindingsLineupImg from '../assets/images/jee_handbook_bindings_lineup_1793626042146.jpg';
+import openSpreadImg from '../assets/images/jee_handbook_open_spread_1793626042152.jpg';
+import editorialStudyImg from '../assets/images/jee_handbook_editorial_study_1793626042139.jpg';
+import qrImg from '../assets/images/qr.jpeg';
+import logoImg from '../assets/images/logo.png';
+
 export const ASSETS = {
-  coverShowcase: "/src/assets/images/jee_handbook_cover_showcase_1793626040990.jpg",
-  bindingsLineup: "/src/assets/images/jee_handbook_bindings_lineup_1793626042146.jpg",
-  openSpread: "/src/assets/images/jee_handbook_open_spread_1793626042152.jpg",
-  editorialStudy: "/src/assets/images/jee_handbook_editorial_study_1793626042139.jpg",
-  qrImage: "/qr.jpeg",
-  fullHandbookPdf: "/samples/Diamond Hand Book.pdf"
+  coverShowcase: coverShowcaseImg,
+  bindingsLineup: bindingsLineupImg,
+  openSpread: openSpreadImg,
+  editorialStudy: editorialStudyImg,
+  qrImage: qrImg,
+  logoImage: logoImg,
+  fullHandbookPdf: `${import.meta.env.BASE_URL}samples/Diamond Hand Book.pdf`
 };
 
 export const BRANDING = {
   brandName: "DIAMOND",
   brandWordmark: "DIAMOND",
-  logoPath: "/logo.png",
+  logoPath: logoImg,
   websiteTitle: "DIAMOND JEE HANDBOOK",
   websiteDescription: "289-page physics, chemistry & mathematics formula and shortcut handbook for JEE Main & Advanced aspirants.",
   contactEmail: "adityasonihyderabad@gmail.com",
@@ -30,7 +38,7 @@ export const BRANDING = {
 export const UPI_SETTINGS = {
   upiId: "9154995314@fam",
   payeeName: "Aditya Soni (DIAMOND)",
-  qrImagePath: "/qr.jpeg",
+  qrImagePath: qrImg,
   instructions: "Scan the official FamPay QR code below using PhonePe, GPay, Paytm, BHIM or FamPay. Pay exact amount and enter your 12-digit UTR reference number below for manual administrator confirmation."
 };
 

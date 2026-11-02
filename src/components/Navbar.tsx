@@ -20,12 +20,9 @@ export const Navbar: React.FC = () => {
         >
           {/* Logo image with graceful diamond fallback */}
           <img 
-            src="/logo.png" 
+            src={BRANDING.logoPath} 
             alt="DIAMOND Logo" 
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = "/logo.svg";
-            }}
-            className="h-8 w-auto object-contain max-w-[36px] rounded-md" 
+            className="h-8 w-auto object-contain max-w-[36px] rounded-md shrink-0" 
           />
           <span className="font-extrabold tracking-tight text-xl">{BRANDING.brandName}</span>
         </Link>

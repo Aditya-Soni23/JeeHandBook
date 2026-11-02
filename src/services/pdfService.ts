@@ -125,7 +125,7 @@ export const generateInvoicePdf = (order: Order): jsPDF => {
 export const downloadSamplePdf = (sampleName: 'Wave Optics' | 'Modern Physics') => {
   const isWave = sampleName === 'Wave Optics';
   const filename = isWave ? 'wave optics.pdf' : 'modern physics.pdf';
-  const filePath = isWave ? '/samples/wave optics.pdf' : '/samples/modern physics.pdf';
+  const filePath = `${import.meta.env.BASE_URL}samples/${filename}`;
 
   try {
     const link = document.createElement('a');

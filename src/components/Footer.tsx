@@ -8,12 +8,9 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <img 
-            src="/logo.png" 
+            src={BRANDING.logoPath} 
             alt="DIAMOND Logo" 
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = "/logo.svg";
-            }}
-            className="h-6 w-auto object-contain max-w-[28px] rounded" 
+            className="h-6 w-auto object-contain max-w-[28px] rounded shrink-0" 
           />
           <span className="font-extrabold text-[#171717]">{BRANDING.brandName}</span>
           <span className="text-gray-300">·</span>
