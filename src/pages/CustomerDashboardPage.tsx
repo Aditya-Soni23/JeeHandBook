@@ -165,7 +165,7 @@ export const CustomerDashboardPage: React.FC = () => {
         order.id,
         {
           paymentStatus: 'PAID',
-          orderStatus: order.productType === 'digital' ? 'COMPLETED' : 'PROCESSING',
+          orderStatus: (order.productType === 'digital' || !order.shippingAddress) ? 'DELIVERED' : 'PROCESSING',
           paymentVerifiedAt: new Date().toISOString(),
           paymentVerifiedBy: user.email
         },

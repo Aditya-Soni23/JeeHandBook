@@ -13,15 +13,30 @@ export default defineConfig(({ mode }) => {
       {
         name: 'html-dev-transform',
         apply: 'serve',
-        transformIndexHtml(html) {
-          // In local development, always ensure /src/main.tsx is loaded with Vite HMR
-          if (!html.includes('/src/main.tsx')) {
-            html = html.replace(
-              /<script type="module" crossorigin src=".*?"><\/script>/,
+        transformIndexHtml: {
+          order: 'pre',
+          handler(html: string) {
+            // In local development, always ensure /src/main.tsx is loaded with Vite HMR
+            let transformed = html.replace(
+              /<script type="module" crossorigin src=".*?"><\/script>/g,
               '<script type="module" src="/src/main.tsx"></script>'
             );
+            // Strip compiled production stylesheet link so dev styles don't conflict
+            transformed = transformed.replace(
+              /<link rel="stylesheet" crossorigin href=".*?">/g,
+              ''
+            );
+            return transformed;
           }
-          return html;
+        },
+        configureServer(server) {
+          // Allow /JeeHandBook/ requests in local dev to seamlessly map to /
+          server.middlewares.use((req, _res, next) => {
+            if (req.url && req.url.startsWith('/JeeHandBook/')) {
+              req.url = req.url.replace('/JeeHandBook', '');
+            }
+            next();
+          });
         }
       }
     ],
