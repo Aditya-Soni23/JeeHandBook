@@ -121,25 +121,8 @@ export const generateInvoicePdf = (order: Order): jsPDF => {
   return doc;
 };
 
-// Generates the free sample PDF for either Wave Optics or Modern Physics
-export const downloadSamplePdf = (sampleName: 'Wave Optics' | 'Modern Physics') => {
-  const isWave = sampleName === 'Wave Optics';
-  const filename = isWave ? 'wave optics.pdf' : 'modern physics.pdf';
-  const filePath = `${import.meta.env.BASE_URL}samples/${filename}`;
-
-  try {
-    const link = document.createElement('a');
-    link.href = filePath;
-    link.download = filename;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    return;
-  } catch (err) {
-    console.warn("Direct download failed, falling back to client-generated PDF:", err);
-  }
-
+// Generates the fallback free sample PDF for either Wave Optics or Modern Physics
+const generateFallbackSamplePdf = (isWave: boolean, filename: string) => {
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -228,6 +211,55 @@ export const downloadSamplePdf = (sampleName: 'Wave Optics' | 'Modern Physics') 
   doc.text('DIAMOND JEE HANDBOOK • 289 Pages Total Syllabus', 105, 265, { align: 'center' });
 
   doc.save(filename);
+};
+
+// Downloads genuine pre-rendered sample PDF with automatic fallback
+export const downloadSamplePdf = async (sampleName: 'Wave Optics' | 'Modern Physics') => {
+  const isWave = sampleName === 'Wave Optics';
+  const filename = isWave ? 'wave optics.pdf' : 'modern physics.pdf';
+  const encodedName = isWave ? 'wave%20optics.pdf' : 'modern%20physics.pdf';
+  const safeName = isWave ? 'wave-optics.pdf' : 'modern-physics.pdf';
+
+  const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+  const urlsToTry = [
+    `${base}samples/${encodedName}`,
+    `${base}samples/${safeName}`,
+    `./samples/${encodedName}`,
+    `./samples/${safeName}`,
+    `/samples/${encodedName}`,
+    `/samples/${safeName}`
+  ];
+
+  for (const url of urlsToTry) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        // Only accept actual PDF or binary stream (never the 404 HTML fallback page)
+        if (!contentType.includes('text/html')) {
+          const blob = await res.blob();
+          if (blob.size > 2000) {
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+            return;
+          }
+        }
+      }
+    } catch {
+      // Continue to next URL candidate
+    }
+  }
+
+  // If network fetch fails or file isn't reachable, generate instant client-side formula compendium
+  console.info("Generating standalone client-side PDF for", sampleName);
+  generateFallbackSamplePdf(isWave, filename);
 };
 
 export const generateLicensedHandbookPdf = (customerName: string, customerEmail: string, orderId: string): jsPDF => {

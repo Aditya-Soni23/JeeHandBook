@@ -108,13 +108,13 @@ export const FREE_SAMPLES = [
   {
     title: "Wave Optics",
     filename: "wave optics.pdf",
-    url: "/samples/wave-optics.pdf",
+    url: `${import.meta.env.BASE_URL}samples/wave-optics.pdf`,
     description: "Young's Double Slit Experiment, Diffraction, Polarization & High-Yield Formulas"
   },
   {
     title: "Modern Physics",
     filename: "modern physics.pdf",
-    url: "/samples/modern-physics.pdf",
+    url: `${import.meta.env.BASE_URL}samples/modern-physics.pdf`,
     description: "Photoelectric Effect, Bohr's Model, De Broglie Wavelength, Radioactivity & Nuclear Physics"
   }
 ];

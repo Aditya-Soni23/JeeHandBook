@@ -61,6 +61,24 @@ if (!fs.existsSync(assetsDir)) {
 }
 fs.cpSync(distAssets, assetsDir, { recursive: true });
 
+// 4b. Mirror dist/samples/ to root samples/ (for GitHub Pages root / support)
+const distSamples = path.join(distDir, 'samples');
+const rootSamples = path.join(rootDir, 'samples');
+if (fs.existsSync(distSamples)) {
+  if (!fs.existsSync(rootSamples)) {
+    fs.mkdirSync(rootSamples, { recursive: true });
+  }
+  fs.cpSync(distSamples, rootSamples, { recursive: true });
+}
+
+// 4c. Mirror root static assets to repository root
+for (const staticFile of ['logo.png', 'qr.jpeg', 'favicon.svg']) {
+  const src = path.join(distDir, staticFile);
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, path.join(rootDir, staticFile));
+  }
+}
+
 // 5. Copy compiled production index.html to root for GitHub Pages root deployment
 const distIndex = path.join(distDir, 'index.html');
 if (fs.existsSync(distIndex)) {

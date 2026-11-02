@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="diamondGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0f172a"/>
+  <!-- Diamond Shape -->
+  <polygon points="32,8 54,24 32,56 10,24" fill="url(#diamondGrad)"/>
+  <polygon points="32,8 54,24 32,28 10,24" fill="url(#shineGrad)"/>
+  <polygon points="32,28 54,24 32,56" fill="#1e40af" fill-opacity="0.4"/>
+  <polygon points="32,8 40,24 32,28 24,24" fill="#bae6fd" fill-opacity="0.6"/>
+</svg>

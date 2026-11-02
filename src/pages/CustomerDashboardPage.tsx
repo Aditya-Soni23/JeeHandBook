@@ -431,7 +431,7 @@ export const CustomerDashboardPage: React.FC = () => {
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
-                  href={`${import.meta.env.BASE_URL}samples/Diamond Hand Book.pdf`}
+                  href={`${import.meta.env.BASE_URL}samples/Diamond%20Hand%20Book.pdf`}
                   download="Diamond Hand Book.pdf"
                   className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer text-sm"
                 >
