@@ -105,8 +105,9 @@ export const firebaseService = {
       console.warn("RTDB updateOrder notice:", e);
     }
 
-    // Auto-unlock digital entitlement if paid (both digital and physical include soft copy!)
-    if (updates.paymentStatus === 'PAID') {
+    // Auto-unlock digital entitlement ONLY for digital orders when paid.
+    // Physical orders require manual admin approval to prevent the free loophole.
+    if (updates.paymentStatus === 'PAID' && merged.productType === 'digital') {
       await this.grantEntitlement(merged.uid, merged.id);
     }
   },

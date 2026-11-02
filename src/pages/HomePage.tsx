@@ -231,7 +231,7 @@ export const HomePage: React.FC = () => {
                   🎁 BONUS
                 </span>
                 <span className="text-[11.5px]">
-                  <strong>Order any printed edition</strong> and automatically get the <strong>Digital Soft Copy (₹30 value) for FREE</strong> unlocked in your dashboard!
+                  <strong>Order any printed edition</strong> and get the <strong>Digital Soft Copy (₹30 value) for FREE</strong> — unlocked in your dashboard after admin verification!
                 </span>
               </div>
 
@@ -596,7 +596,7 @@ export const HomePage: React.FC = () => {
                   </li>
                   <li className="flex items-center gap-1.5 text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded-md mt-1">
                     <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>FREE Digital Soft Copy Included!</span>
+                    <span>FREE Digital Soft Copy (After Verification)</span>
                   </li>
                 </ul>
               </div>
@@ -718,7 +718,7 @@ export const HomePage: React.FC = () => {
                     </div>
                     <div className="flex justify-between text-emerald-700 font-semibold text-[11px] bg-emerald-50 px-2 py-1 rounded">
                       <span>Digital Soft Copy:</span>
-                      <span className="font-bold">FREE (Included)</span>
+                      <span className="font-bold">FREE (After Verification)</span>
                     </div>
                   </>
                 )}

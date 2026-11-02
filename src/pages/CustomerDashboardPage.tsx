@@ -102,7 +102,9 @@ export const CustomerDashboardPage: React.FC = () => {
     );
   }
 
-  const hasDigitalAccess = entitlement.granted || orders.some(o => o.paymentStatus === 'PAID');
+  // Digital access is ONLY granted when admin explicitly approves (entitlement.granted flag).
+  // Physical book buyers do NOT get instant access — admin must manually unlock per order.
+  const hasDigitalAccess = entitlement.granted;
 
   const handleSendChat = async (e: React.FormEvent) => {
     e.preventDefault();
